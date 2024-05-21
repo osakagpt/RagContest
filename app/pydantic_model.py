@@ -21,19 +21,18 @@ class QuestionOut(BaseModel):
         orm_mode = True
 
 
-class AnswerIn(BaseModel):
+class UserAnswerIn(BaseModel):
     answer: str
 
     class Config:
         orm_mode = True
 
 
-class AnswerOut(BaseModel):
+class UserAnswerOut(BaseModel):
     question_id: int
     answer: str
     is_correct: bool
     solving_time_ms: int
-    answered_at: str
 
     class Config:
         orm_mode = True

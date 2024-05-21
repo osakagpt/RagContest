@@ -15,8 +15,24 @@ from sqlalchemy import select, insert
 from sqlalchemy.orm import joinedload
 import secrets
 
-from model import User, Contest, Question, Answer, session_manager
-from pydantic_model import ContestOut, QuestionOut, AnswerIn, AnswerOut
+from model import (
+    Base,
+    User,
+    Contest,
+    DataSource,
+    Question,
+    UserAnswer,
+    ContestFirstDownloaded,
+    QuestionFirstDownloaded,
+)
+from database import session_manager
+from pydantic_model import (
+    ContestOut,
+    DataSourceOut,
+    QuestionOut,
+    UserAnswerIn,
+    UserAnswerOut,
+)
 
 
 API_HEADER_NAME = "x-api-key"
@@ -54,7 +70,7 @@ async def get_validated_user(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # write startup event here
-    # await session_manager.create_tables()
+    await session_manager.create_tables(Base)
     yield
     # write shutdown event here
 
@@ -68,9 +84,9 @@ async def health_check():
     return {"status": "UP"}
 
 
-@app.get("/")
-async def read_root():
-    return FileResponse("./html/index.html", media_type="text/html")
+@app.get("/results")
+async def get_results():
+    return FileResponse("./html/results.html", media_type="text/html")
 
 
 @app.get("/api/contest/{contest_id}", response_model=ContestOut)
@@ -85,11 +101,36 @@ async def get_contest(
         .filter(Contest.id == contest_id)
     )
     contest = result.scalars().first()
-
     if contest is None:
         raise HTTPException(status_code=404, detail="Contest not found")
 
-    return contest
+    result = ContestOut(
+        id=contest.id,
+        name=contest.name,
+        number_of_questions=contest.number_of_questions,
+        description=contest.description,
+        start_at=contest.start_at,
+        end_at=contest.end_at,
+        data_sources=[
+            DataSourceOut(
+                path=data_source.path,
+                type=data_source.type,
+                description=data_source.description,
+            )
+            for data_source in contest.data_sources
+        ],
+    )
+
+    new_record = ContestFirstDownloaded(
+        user_id=user.id,
+        contest_id=contest.id,
+        downloaded_at=datetime.now(),
+    )
+    session.add(new_record)
+    try:
+        await session.commit()
+    finally:
+        return result
 
 
 @app.get("/api/question/{question_id}", response_model=QuestionOut)
@@ -102,8 +143,21 @@ async def get_question(
     question = result.scalars().first()
     if question is None:
         raise HTTPException(status_code=404, detail="Question not found")
-
-    return question
+    questionOut = QuestionOut(
+        id=question.id,
+        query=question.query,
+        description=question.description,
+    )
+    new_record = QuestionFirstDownloaded(
+        user_id=user.id,
+        question_id=question.id,
+        downloaded_at=datetime.now(),
+    )
+    session.add(new_record)
+    try:
+        await session.commit()
+    finally:
+        return questionOut
 
 
 @app.get("/api/contest/{contest_id}/questions", response_model=List[QuestionOut])
@@ -120,10 +174,10 @@ async def get_questions(
     return questions
 
 
-@app.post("/api/question/{question_id}", response_model=AnswerOut)
+@app.post("/api/question/{question_id}", response_model=UserAnswerOut)
 async def submit_answer(
     question_id: int,
-    answer_submission: AnswerIn = Body(...),
+    answer_submission: UserAnswerIn = Body(...),
     user: User = Security(get_validated_user),
     session: AsyncSession = Depends(get_db_session),
 ):
@@ -137,26 +191,35 @@ async def submit_answer(
 
     # Check if the answer is correct
     is_correct = answer_submission.answer == question.right_answer
-    solving_time_ms = 0
 
     # Create a new answer record
-    new_answer = Answer(
+    new_answer = UserAnswer(
         user_id=user.id,
         question_id=question_id,
         is_correct=is_correct,
-        solving_time_ms=solving_time_ms,
-        answered_at=datetime.now(),
+        submitted_at=datetime.now(),
     )
-    answered_at = new_answer.answered_at.strftime("%Y-%m-%d %H:%M:%S")
+    # answered_at = new_answer.submitted_at.strftime("%Y-%m-%d %H:%M:%S")
+    result = await session.execute(
+        select(QuestionFirstDownloaded)
+        .filter(QuestionFirstDownloaded.user_id == user.id)
+        .filter(QuestionFirstDownloaded.question_id == question.id)
+    )
+    question_first_downloaded = result.scalars().first()
+    solving_time_ms = (int)(
+        (
+            new_answer.submitted_at - question_first_downloaded.downloaded_at
+        ).total_seconds()
+        * 1000
+    )
     session.add(new_answer)
     await session.commit()
 
-    return AnswerOut(
+    return UserAnswerOut(
         question_id=question_id,
         answer=answer_submission.answer,
         is_correct=is_correct,
         solving_time_ms=solving_time_ms,
-        answered_at=answered_at,
     )
 
 
@@ -174,13 +237,20 @@ async def signup(
 ):
     hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
     new_api_key = generate_api_key()
-    await session.execute(
-        insert(User).values(
-            username=username,
-            email=email,
-            password=hashed_password.decode("utf-8"),
-            api_key=new_api_key,
-        )
+    new_user = User(
+        username=username,
+        email=email,
+        password=hashed_password.decode("utf-8"),
+        api_key=new_api_key,
     )
+    session.add(new_user)
+    # await session.execute(
+    #     insert(User).values(
+    #         username=username,
+    #         email=email,
+    #         password=hashed_password.decode("utf-8"),
+    #         api_key=new_api_key,
+    #     )
+    # )
     await session.commit()
     return {"api_key": new_api_key}
