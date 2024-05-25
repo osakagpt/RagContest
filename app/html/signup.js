@@ -1,5 +1,4 @@
-
-document.getElementById('signupButton').addEventListener('click', function(event) {
+document.getElementById('signupForm').addEventListener('submit', function(event) {
     event.preventDefault();  // Prevent the default form submission
 
     const username = document.getElementById('username').value;

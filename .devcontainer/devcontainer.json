@@ -21,7 +21,8 @@
         "ms-python.flake8",
         "ms-python.black-formatter",
         "github.copilot",
-        "github.copilot-chat"
+        "github.copilot-chat",
+        "esbenp.prettier-vscode"
       ],
       "settings": {
         "terminal.integrated.profiles.linux": {

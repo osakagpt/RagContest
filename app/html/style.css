@@ -1,0 +1,142 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.header {
+    text-align: center;
+    position: relative;
+    width: 80%;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+section {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #ffffff;
+}
+
+#contest_info {
+    border-color: #2196F3;
+}
+
+#data_source {
+    border-color: #2196F3;
+}
+
+#query_answer {
+    border-color: #2196F3;
+}
+
+h2 {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 95%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button[type="button"] {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-right: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"] {
+    padding: 10px 15px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="button"]:hover, button[type="submit"]:hover {
+    opacity: 0.9;
+}
+
+.options label {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.options input[type="text"] {
+    width: auto;
+    display: inline-block;
+}
+
+.button-group {
+    display: flex;
+    gap: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #dee2e6;
+    text-align: left;
+}
+
+th {
+    background-color: #007bff;
+    color: #fff;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #d6eaf8;
+}
+
+td {
+    color: #343a40;
+}
+
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+        display: block;
+        overflow-x: auto;
+    }
+}

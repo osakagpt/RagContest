@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contest Form</title>
+    <link rel="stylesheet" href="html/style.css">
+</head>
+<body>
+    <form id="contestForm">
+        <h2>Register Contest</h2>
+        <section id="contest_info">
+            <h2>Contest Info</h2>
+            <label for="contest_name">Contest Name:</label>
+            <input type="text" id="contest_name" name="contest_name" required>
+        </section>
+
+        <section id="data_source">
+            <h2>Data Source
+                <div class="button-group">
+                    <button type="button" onclick="addDataSourceSection()">＋</button>
+                    <button type="button" onclick="removeDataSourceSection()">－</button>
+                </div>
+            </h2>
+            <div class="data-source-group">
+                <label for="url">URL:</label>
+                <input type="text" class="url" name="url[]" required>
+
+                <label for="data_type">Data Type:</label>
+                <select class="data_type" name="data_type[]" required>
+                    <option value="text">Text</option>
+                    <option value="image">Image</option>
+                    <option value="audio">Audio</option>
+                    <option value="pdf">PDF</option>
+                    <option value="xlsx">XLSX</option>
+                    <option value="docx">DOCX</option>
+                    <option value="unknown">Unknown</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="query_answer">
+            <h2>Q&A
+                <div class="button-group">
+                    <button type="button" onclick="addQueryAnswerSection()">＋</button>
+                    <button type="button" onclick="removeQueryAnswerSection()">－</button>
+                </div>
+            </h2>
+            <div class="query-answer-group">
+                <label for="query">Query:</label>
+                <input type="text" class="query" name="query[]" required>
+
+                <label for="number_of_options">Number of Options:</label>
+                <select class="number-of-options" name="number_of_options[]" required onchange="generateOptions(this)">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+
+                <div class="options"></div>
+
+                <label for="answer">Answer:</label>
+                <input type="text" class="answer" name="answer[]">
+            </div>
+        </section>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <script src="html/register_contest.js"></script>
+</body>
+</html>

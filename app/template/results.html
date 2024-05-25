@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contest Results</title>
+    <link rel="stylesheet" href="../html/style.css">
+</head>
+<body>
+    <h2>Contest Results</h2>
+    <ul>
+        {% for contest in contests %}
+        <li><a href="/results/{{ contest.id }}">{{ contest.name }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

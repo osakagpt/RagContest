@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 
 
-class DataSourceOut(BaseModel):
+class DataSourcePayload(BaseModel):
     path: str
     type: str
     description: Optional[str]
@@ -15,6 +15,7 @@ class DataSourceOut(BaseModel):
 class QuestionOut(BaseModel):
     id: int
     query: str
+    options: List[str]
     description: Optional[str]
 
     class Config:
@@ -32,20 +33,42 @@ class UserAnswerOut(BaseModel):
     question_id: int
     answer: str
     is_correct: bool
-    solving_time_ms: int
+    time_taken_ms: int
+    is_all_submitted: bool
 
     class Config:
         orm_mode = True
+
+
+class QueryAnswer(BaseModel):
+    query: str
+    options: List[str]
+    answer: str
+
+
+class ContestIn(BaseModel):
+    contest_name: str
+    data_sources: List[DataSourcePayload]
+    query_answers: List[QueryAnswer]
 
 
 class ContestOut(BaseModel):
     id: int
     name: str
-    number_of_questions: int
+    questions: List[int]
     description: Optional[str]
     start_at: Optional[datetime]
     end_at: Optional[datetime]
-    data_sources: List[DataSourceOut]
+    data_sources: List[DataSourcePayload]
 
     class Config:
         orm_mode = True
+
+
+class ResultPayload(BaseModel):
+    user: str
+    contest: str
+    query: str
+    answer: str
+    is_correct: bool
+    time: int
