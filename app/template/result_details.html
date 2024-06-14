@@ -13,21 +13,23 @@
     <table id="resultsTable">
         <thead>
             <tr>
-                <th>Ranking</th>
                 <th>User</th>
-                <th>Number of Correct Answers</th>
-                <th>Total Score</th>
-                <th>Total Time</th>
+                <th>Query</th>
+                <th>User's Answer</th>
+                <th>Pass/Fail</th>
+                <th>Similarity</th>
+                <th>Time</th>
             </tr>
         </thead>
         <tbody>
-            {% for contest_result in response %}
+            {% for answer in response %}
             <tr>
-                <td>{{ contest_result.ranking }}</td>
-                <td>{{ contest_result.user_name }}</td>
-                <td>{{ contest_result.number_of_correct_answers }}</td>
-                <td>{{ contest_result.total_score }}</td>
-                <td>{{ contest_result.total_time_ms }}</td>
+                <td>{{ answer.user_name }}</td>
+                <td>{{ answer.query }}</td>
+                <td>{{ answer.user_answer }}</td>
+                <td>{{ answer.pass_fail }}</td>
+                <td>{{ answer.similarity }}</td>
+                <td>{{ answer.time }}</td>
             </tr>
             {% endfor %}
         </tbody>

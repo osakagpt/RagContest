@@ -1,0 +1,256 @@
+2024-06-14 13:00:47 - root - INFO - API Server starting...
+2024-06-14 13:00:47 - root - INFO - API Server started
+2024-06-14 13:00:47 - root - INFO - username:: postgres
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [generated in 0.00258s] ('user', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.01041s ago] ('contest', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.01458s ago] ('data_source', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.01934s ago] ('question', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.02419s ago] ('answer_embedding', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.02861s ago] ('answer_option', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.03489s ago] ('user_answer', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.04015s ago] ('contest_first_downloaded', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.04498s ago] ('question_first_downloaded', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [cached since 0.04972s ago] ('contest_result', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = $1::VARCHAR AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != $2::VARCHAR
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [generated in 0.00151s] ('conteststatus', 'pg_catalog')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - CREATE TYPE conteststatus AS ENUM ('Registered', 'Scheduled', 'Running', 'Done')
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00195s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE "user" (
+	id SERIAL NOT NULL, 
+	name VARCHAR, 
+	email VARCHAR, 
+	password VARCHAR, 
+	api_key VARCHAR, 
+	registered_at TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
+	is_admin BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (api_key)
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00133s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - CREATE UNIQUE INDEX ix_user_name ON "user" (name)
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00166s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - CREATE UNIQUE INDEX ix_user_email ON "user" (email)
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00159s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE contest (
+	id SERIAL NOT NULL, 
+	name VARCHAR NOT NULL, 
+	number_of_questions INTEGER NOT NULL, 
+	description VARCHAR, 
+	status conteststatus NOT NULL, 
+	start_at TIMESTAMP WITHOUT TIME ZONE, 
+	end_at TIMESTAMP WITHOUT TIME ZONE, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00128s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE data_source (
+	id SERIAL NOT NULL, 
+	contest_id INTEGER NOT NULL, 
+	path VARCHAR NOT NULL, 
+	type VARCHAR NOT NULL, 
+	description VARCHAR, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(contest_id) REFERENCES contest (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00118s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE question (
+	id SERIAL NOT NULL, 
+	contest_id INTEGER NOT NULL, 
+	query VARCHAR NOT NULL, 
+	number_of_options INTEGER NOT NULL, 
+	description VARCHAR, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(contest_id) REFERENCES contest (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00120s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE contest_first_downloaded (
+	id SERIAL NOT NULL, 
+	user_id INTEGER NOT NULL, 
+	contest_id INTEGER NOT NULL, 
+	downloaded_at TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
+	PRIMARY KEY (id), 
+	CONSTRAINT uq_user_contest UNIQUE (user_id, contest_id), 
+	FOREIGN KEY(user_id) REFERENCES "user" (id) ON DELETE CASCADE, 
+	FOREIGN KEY(contest_id) REFERENCES contest (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00107s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE contest_result (
+	id SERIAL NOT NULL, 
+	user_id INTEGER NOT NULL, 
+	contest_id INTEGER NOT NULL, 
+	number_of_correct_answers INTEGER NOT NULL, 
+	time_ms INTEGER NOT NULL, 
+	PRIMARY KEY (id), 
+	CONSTRAINT uq_user_contest_result UNIQUE (user_id, contest_id), 
+	FOREIGN KEY(user_id) REFERENCES "user" (id) ON DELETE CASCADE, 
+	FOREIGN KEY(contest_id) REFERENCES contest (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00140s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE answer_embedding (
+	id SERIAL NOT NULL, 
+	question_id INTEGER NOT NULL, 
+	answer VARCHAR NOT NULL, 
+	text_embedding_3_small VECTOR(1536), 
+	PRIMARY KEY (id), 
+	UNIQUE (question_id), 
+	FOREIGN KEY(question_id) REFERENCES question (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00117s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE answer_option (
+	id SERIAL NOT NULL, 
+	question_id INTEGER NOT NULL, 
+	option_text VARCHAR NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(question_id) REFERENCES question (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00114s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE user_answer (
+	id SERIAL NOT NULL, 
+	answer VARCHAR NOT NULL, 
+	user_id INTEGER NOT NULL, 
+	question_id INTEGER NOT NULL, 
+	is_correct BOOLEAN NOT NULL, 
+	similarity FLOAT NOT NULL, 
+	submitted_at TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
+	time_taken_ms INTEGER NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES "user" (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES question (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00112s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - 
+CREATE TABLE question_first_downloaded (
+	id SERIAL NOT NULL, 
+	user_id INTEGER NOT NULL, 
+	question_id INTEGER NOT NULL, 
+	downloaded_at TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
+	PRIMARY KEY (id), 
+	CONSTRAINT uq_user_question UNIQUE (user_id, question_id), 
+	FOREIGN KEY(user_id) REFERENCES "user" (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES question (id) ON DELETE CASCADE
+)
+
+
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - [no key 0.00114s] ()
+2024-06-14 13:00:47 - sqlalchemy.engine.Engine - INFO - COMMIT
+2024-06-14 13:23:05 - root - INFO - API Server starting...
+2024-06-14 13:23:05 - root - INFO - API Server started
+2024-06-14 13:23:05 - root - INFO - username:: postgres
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - select pg_catalog.version()
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - select current_schema()
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - show standard_conforming_strings
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [raw sql] ()
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - BEGIN (implicit)
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [generated in 0.00394s] ('user', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.06805s ago] ('contest', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.09146s ago] ('data_source', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.09797s ago] ('question', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.103s ago] ('answer_embedding', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.1088s ago] ('answer_option', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.1299s ago] ('user_answer', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.1415s ago] ('contest_first_downloaded', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.1488s ago] ('question_first_downloaded', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = $1::VARCHAR AND pg_catalog.pg_class.relkind = ANY (ARRAY[$2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::VARCHAR]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != $7::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [cached since 0.1548s ago] ('contest_result', 'r', 'p', 'f', 'v', 'm', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = $1::VARCHAR AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != $2::VARCHAR
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - [generated in 0.01089s] ('conteststatus', 'pg_catalog')
+2024-06-14 13:23:06 - sqlalchemy.engine.Engine - INFO - COMMIT

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contest Form</title>
     <link rel="stylesheet" href="html/style.css">
 </head>
+
 <body>
     <form id="contestForm">
         <h2>Register Contest</h2>
@@ -13,6 +15,8 @@
             <h2>Contest Info</h2>
             <label for="contest_name">Contest Name:</label>
             <input type="text" id="contest_name" name="contest_name" required>
+            <label for="contest_description">Description:</label>
+            <input type="text" class="description" name="contest_description">
         </section>
 
         <section id="data_source">
@@ -25,17 +29,18 @@
             <div class="data-source-group">
                 <label for="url">URL:</label>
                 <input type="text" class="url" name="url[]" required>
-
                 <label for="data_type">Data Type:</label>
                 <select class="data_type" name="data_type[]" required>
                     <option value="text">Text</option>
                     <option value="image">Image</option>
                     <option value="audio">Audio</option>
-                    <option value="pdf">PDF</option>
-                    <option value="xlsx">XLSX</option>
-                    <option value="docx">DOCX</option>
+                    <option value="pdf">PDFファイル</option>
+                    <option value="xlsx">Excelファイル</option>
+                    <option value="docx">Wordファイル</option>
                     <option value="unknown">Unknown</option>
                 </select>
+                <label for="datasource_description">Description:</label>
+                <input type="text" class="description" name="datasource_description">
             </div>
         </section>
 
@@ -63,6 +68,8 @@
 
                 <label for="answer">Answer:</label>
                 <input type="text" class="answer" name="answer[]">
+                <label for="question_description">Description:</label>
+                <input type="text" class="description" name="question_description">
             </div>
         </section>
 
@@ -71,4 +78,5 @@
 
     <script src="html/register_contest.js"></script>
 </body>
+
 </html>

@@ -3,12 +3,15 @@ import os
 from contextlib import asynccontextmanager
 from typing import Any, AsyncIterator
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
+
+from logger_config import logger
 
 
 class DatabaseSessionManager:
@@ -57,10 +60,18 @@ class DatabaseSessionManager:
             await conn.run_sync(Base.metadata.create_all)
 
 
-username = os.getenv("POSTGRES_USER")
-passwd = os.getenv("POSTGRES_PASSWORD")
-dbname = os.getenv("POSTGRES_DB")
-DATABASE_URL = f"postgresql+asyncpg://{username}:{passwd}@postgres:5432/{dbname}"
-print(DATABASE_URL)
-# Create the engine and sessionmaker
-session_manager = DatabaseSessionManager(DATABASE_URL, {"echo": True, "future": True})
+def get_database_url():
+    username = os.getenv("POSTGRES_USER")
+    passwd = os.getenv("POSTGRES_PASSWORD")
+    dbname = os.getenv("POSTGRES_DB")
+    logger.info(f"username:: {username}")
+    return f"postgresql+asyncpg://{username}:{passwd}@postgres:5432/{dbname}"
+
+
+def get_session_manager() -> DatabaseSessionManager:
+    return DatabaseSessionManager(get_database_url(), {"echo": True, "future": True})
+
+
+async def get_db_session(dbsm: DatabaseSessionManager = Depends(get_session_manager)):
+    async with dbsm.session() as session:
+        yield session

@@ -1,51 +1,48 @@
-from datetime import datetime
-import os
-from typing import List
+from typing import List, Dict
 
 import bcrypt
-
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, HTTPException, Body, Depends, Security
 from fastapi.responses import FileResponse
-from fastapi.responses import HTMLResponse
 from fastapi.security import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, insert
+from sqlalchemy import select, desc
 from sqlalchemy.orm import joinedload
 import secrets
 
+from database import get_db_session, get_session_manager
+from embedding_api_client import OpenAIClient
 from model import (
     Base,
+    ContestStatus,
     User,
     Contest,
+    ContestResult,
     DataSource,
     Question,
+    AnswerEmbedding,
     AnswerOption,
     UserAnswer,
     ContestFirstDownloaded,
     QuestionFirstDownloaded,
 )
-from database import session_manager
+from logger_config import logger
 from payload import (
     ContestIn,
     ContestOut,
     DataSourcePayload,
     QuestionOut,
-    UserAnswerIn,
+    UserAnswerSubmission,
     UserAnswerOut,
-    ResultPayload,
 )
+from utils import format_millisec
+from validate import UserAnswerScorer
 
 
 API_HEADER_NAME = "x-api-key"
 api_key_header = APIKeyHeader(name=API_HEADER_NAME, auto_error=False)
-
-
-async def get_db_session():
-    async with session_manager.session() as session:
-        yield session
 
 
 def generate_api_key():
@@ -60,7 +57,6 @@ async def get_user_by_api_key(api_key: str, session: AsyncSession = Depends(get_
 async def get_validated_user(
     api_key_header: str = Security(api_key_header),
     session: AsyncSession = Depends(get_db_session),
-    # user: User = Depends(get_user_by_api_key),
 ):
     user = await get_user_by_api_key(api_key_header, session)
     if user:
@@ -72,24 +68,25 @@ async def get_validated_user(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # write startup event here
-    # await session_manager.create_tables(Base)
+    await get_session_manager().create_tables(Base)
     yield
     # write shutdown event here
 
-
+logger.info("API Server starting...")
 app = FastAPI(title="Rag Contest", lifespan=lifespan)
+logger.info("API Server started")
 app.mount("/html", StaticFiles(directory="html"), name="html")
 templates = Jinja2Templates(directory="template")
 
 
-@app.get("/api/contests", response_model=List[int])
+@app.get("/api/contests", response_model=Dict[int, str])
 async def get_contests_list(
     user: User = Security(get_validated_user),
     session: AsyncSession = Depends(get_db_session),
 ):
     result = await session.execute(select(Contest).filter(Contest.status != "Done"))
     contests = result.scalars().all()
-    return [contest.id for contest in contests]
+    return {contest.id: contest.name for contest in contests}
 
 
 @app.get("/api/contests/{contest_id}", response_model=ContestOut)
@@ -124,11 +121,7 @@ async def get_contest(
         ],
     )
 
-    new_record = ContestFirstDownloaded(
-        user_id=user.id,
-        contest_id=contest.id,
-        downloaded_at=datetime.now(),
-    )
+    new_record = ContestFirstDownloaded(user_id=user.id, contest_id=contest.id)
     session.add(new_record)
     try:
         await session.commit()
@@ -155,11 +148,7 @@ async def get_question(
         options=[option.option_text for option in question.answer_options],
         description=question.description,
     )
-    new_record = QuestionFirstDownloaded(
-        user_id=user.id,
-        question_id=question.id,
-        downloaded_at=datetime.now(),
-    )
+    new_record = QuestionFirstDownloaded(user_id=user.id, question_id=question.id)
     session.add(new_record)
     try:
         await session.commit()
@@ -184,7 +173,7 @@ async def get_questions(
 @app.post("/api/questions/{question_id}", response_model=UserAnswerOut)
 async def submit_answer(
     question_id: int,
-    answer_submission: UserAnswerIn = Body(...),
+    answer_submission: UserAnswerSubmission = Body(...),
     user: User = Security(get_validated_user),
     session: AsyncSession = Depends(get_db_session),
 ):
@@ -195,41 +184,63 @@ async def submit_answer(
     question = result.scalars().first()
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
+    user_id = user.id
+    contest_id = question.contest_id
 
-    # Check if the answer is correct
-    is_correct = answer_submission.answer == question.right_answer
-    # answered_at = new_answer.submitted_at.strftime("%Y-%m-%d %H:%M:%S")
-    result = await session.execute(
-        select(QuestionFirstDownloaded)
-        .filter(QuestionFirstDownloaded.user_id == user.id)
-        .filter(QuestionFirstDownloaded.question_id == question.id)
-    )
-    question_first_downloaded = result.scalars().first()
-
-    submitted_at = datetime.now()
-    time_taken_ms = (int)((submitted_at - question_first_downloaded.downloaded_at).total_seconds() * 1000)
+    # Score the answer
+    uas = await UserAnswerScorer.create(user_id, question_id, session)
+    score = uas.get_score(answer_submission.answer)
+    is_correct = uas.is_correct(score)
+    time_taken_ms = uas.get_time()
 
     # Create a new answer record
     new_answer = UserAnswer(
         answer=answer_submission.answer,
-        user_id=user.id,
+        user_id=user_id,
         question_id=question_id,
         is_correct=is_correct,
-        submitted_at=submitted_at,
+        similarity=score,
         time_taken_ms=time_taken_ms,
     )
-
     session.add(new_answer)
     await session.commit()
 
-    # [TODO] Check if all questions are answered
+    # check if all questions are answered
+    result = await session.execute(
+        select(UserAnswer).options(joinedload(UserAnswer.question)).filter(UserAnswer.user_id == user_id)
+    )
+    answers = result.scalars().all()
+    result = await session.execute(select(Question).filter(Question.contest_id == contest_id))
+    questions = result.scalars().all()
+    all_questions = {question.id for question in questions}
+    answered_questions = {answer.question_id for answer in answers}
+    sum_time = sum([answer.time_taken_ms for answer in answers])
+    number_of_correct_answers = sum([answer.is_correct for answer in answers])
+    print("contest_id: ", contest_id)
+    print("all_questions: ", all_questions)
+    print("answered_questions: ", answered_questions)
+    answers_remain = list(all_questions - answered_questions)
+    # await session.commit()
+    if not answers_remain:
+        try:
+            new_result = ContestResult(
+                user_id=user_id,
+                contest_id=contest_id,
+                number_of_correct_answers=number_of_correct_answers,
+                time_ms=sum_time,
+            )
+            session.add(new_result)
+            await session.commit()
+        except Exception:
+            pass
 
     return UserAnswerOut(
         question_id=question_id,
         answer=answer_submission.answer,
         is_correct=is_correct,
+        similarity=score,
         time_taken_ms=time_taken_ms,
-        is_all_submitted=False,
+        not_answered_question_ids=answers_remain,
     )
 
 
@@ -262,7 +273,7 @@ async def signup(
 async def get_results_page(request: Request, session: AsyncSession = Depends(get_db_session)):
     result = await session.execute(
         select(Contest)
-        # .filter(Contest.status == "registered")
+        # .filter(Contest.status == ContestStatus.Done)
     )
     contests = result.scalars().all()
     return templates.TemplateResponse("results.html", {"request": request, "contests": contests})
@@ -270,14 +281,53 @@ async def get_results_page(request: Request, session: AsyncSession = Depends(get
 
 @app.get("/results/{contest_id}")
 async def get_result_page(request: Request, contest_id: int, session: AsyncSession = Depends(get_db_session)):
+    result = await session.execute(select(Contest).filter(Contest.id == contest_id))
+    contest = result.scalars().first()
+    if not contest:
+        raise HTTPException(status_code=404, detail="Contest not found")
+    contest_name = contest.name
+
+    result = await session.execute(
+        select(ContestResult)
+        .options(joinedload(ContestResult.user))
+        .filter(ContestResult.contest_id == contest_id)
+        .order_by(desc(ContestResult.number_of_correct_answers))
+    )
+    contest_results = result.scalars().all()
+
+    response = []
+    for idx, contest_result in enumerate(contest_results):
+        username = contest_result.user.name
+        response.append(
+            {
+                "ranking": idx + 1,
+                "user_name": username,
+                "number_of_correct_answers": contest_result.number_of_correct_answers,
+                "total_score": 100,
+                "total_time_ms": format_millisec(contest_result.time_ms),
+            }
+        )
+
+    return templates.TemplateResponse(
+        "result.html",
+        {"request": request, "contest_name": contest_name, "response": response},
+    )
+
+
+@app.get("/results/{contest_id}/details")
+async def get_result_details_page(request: Request, contest_id: int, session: AsyncSession = Depends(get_db_session)):
     result = await session.execute(
         select(UserAnswer)
-        .join(UserAnswer.question)  # Join UserAnswer with Question
-        .join(Question.contest)  # Join Question with Contest
         .options(joinedload(UserAnswer.user), joinedload(UserAnswer.question))
         .filter(Contest.id == contest_id)
     )
     user_answers = result.scalars().all()
+
+    result = await session.execute(select(Contest).filter(Contest.id == contest_id))
+    contest = result.scalars().first()
+    if not contest:
+        raise HTTPException(status_code=404, detail="Contest not found")
+    contest_name = contest.name
 
     response = []
     for answer in user_answers:
@@ -287,15 +337,16 @@ async def get_result_page(request: Request, contest_id: int, session: AsyncSessi
             {
                 "user_name": username,
                 "query": query,
-                "answer": answer.answer,
+                "user_answer": answer.answer,
+                "similarity": answer.similarity,
                 "pass_fail": "Pass" if answer.is_correct else "Fail",
-                "time": answer.time_taken_ms,
+                "time": format_millisec(answer.time_taken_ms),
             }
         )
 
     return templates.TemplateResponse(
         "result.html",
-        {"request": request, "contest_id": contest_id, "response": response},
+        {"request": request, "contest_name": contest_name, "response": response},
     )
 
 
@@ -309,31 +360,39 @@ async def register_contest(
     contest_submission: ContestIn = Body(...),
     session: AsyncSession = Depends(get_db_session),
 ):
-    # Contest, DataSource, Question, AnswerOption テーブルに格納
+    # Contest, DataSource, Question, AnswerEmbedding, AnswerOption テーブルに格納
     new_contest = Contest(
-        name=contest_submission.contest_name,
+        name=contest_submission.contest_info.name,
+        description=contest_submission.contest_info.description,
         number_of_questions=len(contest_submission.query_answers),
     )
     session.add(new_contest)
     await session.flush()
 
     for data_source in contest_submission.data_sources:
-        new_data_source = DataSource(contest_id=new_contest.id, path=data_source.path, type=data_source.type)
+        new_data_source = DataSource(
+            contest_id=new_contest.id, path=data_source.path, type=data_source.type, description=data_source.description
+        )
         session.add(new_data_source)
+        await session.flush()
 
     for qa in contest_submission.query_answers:
         new_qa = Question(
-            contest_id=new_contest.id,
-            query=qa.query,
-            right_answer=qa.answer,
-            number_of_options=len(qa.options),
+            contest_id=new_contest.id, query=qa.query, number_of_options=len(qa.options), description=qa.description
         )
         session.add(new_qa)
+        await session.flush()
+
+        emb = OpenAIClient().get_embedding(qa.query, qa.answer)
+        new_answer = AnswerEmbedding(question_id=new_qa.id, answer=qa.answer, text_embedding_3_small=emb)
+        session.add(new_answer)
         await session.flush()
 
         for option in qa.options:
             new_option = AnswerOption(question_id=new_qa.id, option_text=option)
             session.add(new_option)
+            await session.flush()
 
     await session.commit()
+    # [疑問]何を返せばいいのか
     # return {"status": "success", "contest_id": new_contest.id}

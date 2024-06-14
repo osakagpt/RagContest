@@ -1,9 +1,11 @@
-document.getElementById('contestForm').addEventListener('submit', function(event) {
+document.getElementById('contestForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const formData = new FormData(this);
     const data = {
-        contest_name: formData.get('contest_name'),
+        contest_info: {
+            "name": formData.get('contest_name'), 
+            "description": formData.get('contest_description')},
         data_sources: [],
         query_answers: []
     };
@@ -11,11 +13,12 @@ document.getElementById('contestForm').addEventListener('submit', function(event
     // Gather data sources
     const urlElements = document.querySelectorAll('.data-source-group .url');
     const typeElements = document.querySelectorAll('.data-source-group .data_type');
+    const descriptionElements = document.querySelectorAll('.data-source-group .description');
     urlElements.forEach((urlElement, index) => {
         const dataSource = {
             path: urlElement.value,
             type: typeElements[index].value,
-            description: ''
+            description: descriptionElements[index].value
         };
         data.data_sources.push(dataSource);
     });
@@ -24,12 +27,14 @@ document.getElementById('contestForm').addEventListener('submit', function(event
     const queryElements = document.querySelectorAll('.query-answer-group .query');
     const numberOfOptionsElements = document.querySelectorAll('.query-answer-group .number-of-options');
     const optionsContainers = document.querySelectorAll('.query-answer-group .options');
+    const queryDescriptionElements = document.querySelectorAll('.query-answer-group .description');
 
     queryElements.forEach((queryElement, index) => {
         const queryAnswer = {
             query: queryElement.value,
             options: [],
-            answer: ''
+            answer: '',
+            description: queryDescriptionElements[index].value
         };
         const numberOfOptions = parseInt(numberOfOptionsElements[index].value, 10);
 
@@ -57,8 +62,8 @@ document.getElementById('contestForm').addEventListener('submit', function(event
         },
         body: JSON.stringify(data),
     }).then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.error('Error:', error));
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
 });
 
 
@@ -94,7 +99,7 @@ function generateOptions(select) {
             optionInput.type = 'text';
             optionInput.className = 'option';
             optionInput.name = `option${select.name.split('[')[1]}`;
-            optionInput.oninput = function() {
+            optionInput.oninput = function () {
                 updateAnswerOptions(answerSelect, optionsContainer);
             };
             optionsContainer.appendChild(optionLabel);
@@ -134,11 +139,11 @@ function addQueryAnswerSection() {
     const queryAnswerGroup = document.querySelector('.query-answer-group').cloneNode(true);
     queryAnswerGroup.querySelectorAll('input').forEach(input => input.value = '');
     queryAnswerGroup.querySelectorAll('.options').forEach(div => div.innerHTML = '');
-    
+
     // Set number of options to 0
     const numberOfOptionsInput = queryAnswerGroup.querySelector('.number-of-options');
     numberOfOptionsInput.value = '0';
-    
+
     // Change answer input to textbox
     const answerInput = queryAnswerGroup.querySelector('.answer');
     const newTextInput = document.createElement('input');
@@ -146,7 +151,7 @@ function addQueryAnswerSection() {
     newTextInput.className = 'answer';
     newTextInput.name = answerInput.name;
     answerInput.replaceWith(newTextInput);
-    
+
     document.getElementById('query_answer').appendChild(queryAnswerGroup);
 }
 

@@ -55,7 +55,8 @@ label {
     margin-bottom: 5px;
 }
 
-input, select {
+input,
+select {
     width: 95%;
     padding: 8px;
     margin-bottom: 10px;
@@ -83,7 +84,8 @@ button[type="submit"] {
     cursor: pointer;
 }
 
-button[type="button"]:hover, button[type="submit"]:hover {
+button[type="button"]:hover,
+button[type="submit"]:hover {
     opacity: 0.9;
 }
 
@@ -110,7 +112,8 @@ table {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-th, td {
+th,
+td {
     padding: 12px 15px;
     border: 1px solid #dee2e6;
     text-align: left;

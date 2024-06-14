@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Dict, Optional
 
 
 class DataSourcePayload(BaseModel):
@@ -22,7 +22,7 @@ class QuestionOut(BaseModel):
         orm_mode = True
 
 
-class UserAnswerIn(BaseModel):
+class UserAnswerSubmission(BaseModel):
     answer: str
 
     class Config:
@@ -33,8 +33,9 @@ class UserAnswerOut(BaseModel):
     question_id: int
     answer: str
     is_correct: bool
+    similarity: float
     time_taken_ms: int
-    is_all_submitted: bool
+    not_answered_question_ids: list[int]
 
     class Config:
         orm_mode = True
@@ -44,10 +45,19 @@ class QueryAnswer(BaseModel):
     query: str
     options: List[str]
     answer: str
+    description: Optional[str]
+
+
+class ContestInfo(BaseModel):
+    name: str
+    description: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 
 class ContestIn(BaseModel):
-    contest_name: str
+    contest_info: ContestInfo
     data_sources: List[DataSourcePayload]
     query_answers: List[QueryAnswer]
 
@@ -64,11 +74,3 @@ class ContestOut(BaseModel):
     class Config:
         orm_mode = True
 
-
-class ResultPayload(BaseModel):
-    user: str
-    contest: str
-    query: str
-    answer: str
-    is_correct: bool
-    time: int

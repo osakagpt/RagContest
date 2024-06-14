@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile

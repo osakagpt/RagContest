@@ -1,4 +1,4 @@
-document.getElementById('signupForm').addEventListener('submit', function(event) {
+document.getElementById('signupForm').addEventListener('submit', function (event) {
     event.preventDefault();  // Prevent the default form submission
 
     const username = document.getElementById('username').value;
@@ -12,7 +12,7 @@ document.getElementById('signupForm').addEventListener('submit', function(event)
         },
         body: JSON.stringify({ username, email, password })
     })
-    .then(response => response.json())
-    .then(data => alert('Your API KEY(メモっとけ): ' + data.api_key))
-    .catch(error => alert('Error during registration: ' + error));
+        .then(response => response.json())
+        .then(data => alert('Your API KEY(メモっとけ): ' + data.api_key))
+        .catch(error => alert('Error during registration: ' + error));
 });
