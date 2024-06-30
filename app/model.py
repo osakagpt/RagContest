@@ -50,8 +50,18 @@ class User(Base):
 
     user_answers = relationship("UserAnswer", back_populates="user")
     contests_downloaded = relationship("ContestFirstDownloaded", back_populates="user")
-    questions_downloaded = relationship("QuestionFirstDownloaded", back_populates="user")
+    questions_downloaded = relationship(
+        "QuestionFirstDownloaded", back_populates="user"
+    )
     contest_results = relationship("ContestResult", back_populates="user")
+
+
+class TemporaryUser(Base):
+    __tablename__ = "temporary_user"
+    id = Column(String, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    password = Column(String, nullable=False)
 
 
 class Contest(Base):
@@ -60,13 +70,17 @@ class Contest(Base):
     name = Column(String, unique=True, nullable=False)
     number_of_questions = Column(Integer, nullable=False)
     description = Column(String)
-    status = Column(EnumType(ContestStatus), default=ContestStatus.Registered, nullable=False)
+    status = Column(
+        EnumType(ContestStatus), default=ContestStatus.Registered, nullable=False
+    )
     start_at = Column(DateTime)
     end_at = Column(DateTime)
 
     data_sources = relationship("DataSource", back_populates="contest")
     questions = relationship("Question", back_populates="contest")
-    contests_downloaded = relationship("ContestFirstDownloaded", back_populates="contest")
+    contests_downloaded = relationship(
+        "ContestFirstDownloaded", back_populates="contest"
+    )
     contest_results = relationship("ContestResult", back_populates="contest")
 
 
@@ -74,7 +88,9 @@ class Contest(Base):
 class DataSource(Base):
     __tablename__ = "data_source"
     id = Column(Integer, primary_key=True)
-    contest_id = Column(Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False)
+    contest_id = Column(
+        Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False
+    )
     path = Column(String, nullable=False)
     type = Column(String, nullable=False)
     description = Column(String)
@@ -86,22 +102,33 @@ class DataSource(Base):
 class Question(Base):
     __tablename__ = "question"
     id = Column(Integer, primary_key=True)
-    contest_id = Column(Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False)
+    contest_id = Column(
+        Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False
+    )
     query = Column(String, nullable=False)
     number_of_options = Column(Integer, nullable=False)
     description = Column(String)
 
     contest = relationship("Contest", back_populates="questions")
-    right_answer = relationship("AnswerEmbedding", back_populates="question", uselist=False)
+    right_answer = relationship(
+        "AnswerEmbedding", back_populates="question", uselist=False
+    )
     user_answers = relationship("UserAnswer", back_populates="question")
     answer_options = relationship("AnswerOption", back_populates="question")
-    questions_downloaded = relationship("QuestionFirstDownloaded", back_populates="question")
+    questions_downloaded = relationship(
+        "QuestionFirstDownloaded", back_populates="question"
+    )
 
 
 class AnswerEmbedding(Base):
     __tablename__ = "answer_embedding"
     id = Column(Integer, primary_key=True)
-    question_id = Column(Integer, ForeignKey("question.id", ondelete="CASCADE"), nullable=False, unique=True)
+    question_id = Column(
+        Integer,
+        ForeignKey("question.id", ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
     answer = Column(String, nullable=False)
     text_embedding_3_small = Column(Vector(1536), nullable=True)
 
@@ -111,7 +138,9 @@ class AnswerEmbedding(Base):
 class AnswerOption(Base):
     __tablename__ = "answer_option"
     id = Column(Integer, primary_key=True)
-    question_id = Column(Integer, ForeignKey("question.id", ondelete="CASCADE"), nullable=False)
+    question_id = Column(
+        Integer, ForeignKey("question.id", ondelete="CASCADE"), nullable=False
+    )
     option_text = Column(String, nullable=False)
 
     question = relationship("Question", back_populates="answer_options")
@@ -123,7 +152,9 @@ class UserAnswer(Base):
     id = Column(Integer, primary_key=True)
     answer = Column(String, nullable=False)
     user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-    question_id = Column(Integer, ForeignKey("question.id", ondelete="CASCADE"), nullable=False)
+    question_id = Column(
+        Integer, ForeignKey("question.id", ondelete="CASCADE"), nullable=False
+    )
     is_correct = Column(Boolean, nullable=False)
     similarity = Column(Float, nullable=False)
     submitted_at = Column(DateTime, default=datetime.now, nullable=False)
@@ -137,34 +168,46 @@ class ContestFirstDownloaded(Base):
     __tablename__ = "contest_first_downloaded"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-    contest_id = Column(Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False)
+    contest_id = Column(
+        Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False
+    )
     downloaded_at = Column(DateTime, default=datetime.now, nullable=False)
 
     user = relationship("User", back_populates="contests_downloaded")
     contest = relationship("Contest", back_populates="contests_downloaded")
-    __table_args__ = (UniqueConstraint("user_id", "contest_id", name="uq_user_contest"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "contest_id", name="uq_user_contest"),
+    )
 
 
 class QuestionFirstDownloaded(Base):
     __tablename__ = "question_first_downloaded"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-    question_id = Column(Integer, ForeignKey("question.id", ondelete="CASCADE"), nullable=False)
+    question_id = Column(
+        Integer, ForeignKey("question.id", ondelete="CASCADE"), nullable=False
+    )
     downloaded_at = Column(DateTime, default=datetime.now, nullable=False)
 
     user = relationship("User", back_populates="questions_downloaded")
     question = relationship("Question", back_populates="questions_downloaded")
-    __table_args__ = (UniqueConstraint("user_id", "question_id", name="uq_user_question"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "question_id", name="uq_user_question"),
+    )
 
 
 class ContestResult(Base):
     __tablename__ = "contest_result"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
-    contest_id = Column(Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False)
+    contest_id = Column(
+        Integer, ForeignKey("contest.id", ondelete="CASCADE"), nullable=False
+    )
     number_of_correct_answers = Column(Integer, nullable=False)
     time_ms = Column(Integer, nullable=False)
 
     user = relationship("User", back_populates="contest_results")
     contest = relationship("Contest", back_populates="contest_results")
-    __table_args__ = (UniqueConstraint("user_id", "contest_id", name="uq_user_contest_result"),)
+    __table_args__ = (
+        UniqueConstraint("user_id", "contest_id", name="uq_user_contest_result"),
+    )

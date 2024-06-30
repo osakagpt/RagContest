@@ -4,6 +4,7 @@ document.getElementById('signupForm').addEventListener('submit', function (event
     const username = document.getElementById('username').value;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+    console.log(username);
 
     fetch('/signup', {
         method: 'POST',
@@ -13,6 +14,6 @@ document.getElementById('signupForm').addEventListener('submit', function (event
         body: JSON.stringify({ username, email, password })
     })
         .then(response => response.json())
-        .then(data => alert('Your API KEY(メモっとけ): ' + data.api_key))
-        .catch(error => alert('Error during registration: ' + error));
+        .then(data => alert('Your API KEY(メモっとけ): ' + data.message))
+        .catch(error => alert('Error during signup: ' + error));
 });
