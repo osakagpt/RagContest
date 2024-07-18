@@ -1,8 +1,7 @@
 from datetime import timedelta, datetime, timezone
 from typing import List, Dict, Optional
 
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import Request, Depends, HTTPException, status
 from jose import jwt
 from jose.exceptions import JWTError
 from passlib.context import CryptContext
@@ -46,6 +45,13 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, jwt_settings.SECRET_KEY, algorithm=jwt_settings.ALGORITHM)
     return encoded_jwt
+
+
+def fetch_access_token_from_cookie_header(request: Request):
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Access token is missing")
+    return access_token
 
 
 # Example function to authenticate user and generate access token

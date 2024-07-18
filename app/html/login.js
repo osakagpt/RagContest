@@ -9,40 +9,20 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        redirect: 'manual'
     })
     .then(response => {
-        if (!response.ok) {
+        console.log("response: ", response);
+        if (response.type === 'opaqueredirect') {
+            // This means we received a redirect response
+            window.location.href = '/dashboard'; // Manually redirect to dashboard
+        } else if (!response.ok) {
             throw new Error('Login Failed');
+        } else {
+            // Handle successful non-redirect response here if needed
+            console.log('Login successful');
         }
-        return response.json();
-    })
-    .then(data => {
-        // localStorage.setItem('token', data.access_token);
-        window.location.href = '/dashboard';
     })
     .catch(error => alert('Error during login: ' + error));
 });
-
-function accessDashboard(token) {
-    window.history.pushState({}, '', '/dashboard');
-    fetch('/dashboard', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Access Denied');
-        }
-        return response.text();
-    })
-    .then(html => {
-        document.documentElement.innerHTML = html;
-    })
-    .catch(error => {
-        alert('Error during dashboard access: ' + error);
-        window.history.pushState({}, '', '/login');
-    });
-}

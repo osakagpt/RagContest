@@ -3,9 +3,9 @@ from datetime import timedelta
 import uuid
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, Response, HTTPException, Body, Depends, Security
+from fastapi import FastAPI, Request, Response, HTTPException, Body, Depends, Security, status
 from fastapi.responses import FileResponse, RedirectResponse
-from fastapi.security import APIKeyHeader, OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import APIKeyHeader
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from jose import jwt
@@ -46,6 +46,7 @@ from utils import (
     verify_password,
     get_password_hash,
     create_access_token,
+    fetch_access_token_from_cookie_header,
     format_millisec,
     authenticate_user,
 )
@@ -86,7 +87,6 @@ async def lifespan(app: FastAPI):
 
 logger.info("API Server starting...")
 app = FastAPI(title="Rag Contest", lifespan=lifespan)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 logger.info("API Server started")
 app.mount("/html", StaticFiles(directory="html"), name="html")
 templates = Jinja2Templates(directory="template")
@@ -322,16 +322,12 @@ async def authenticate_user_by_email(user_id: str, session: AsyncSession = Depen
 
 
 @app.get("/login")
-async def login_page(request: Request):
+async def login_page(request: Request, session: AsyncSession = Depends(get_db_session)):
     try:
-        token = await oauth2_scheme(request)
-        payload = jwt.decode(token, jwt_settings.SECRET_KEY, algorithms=[jwt_settings.ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
+        token = fetch_access_token_from_cookie_header(request)
+        user = await get_current_user(token, session)
         return RedirectResponse(url="/dashboard", status_code=303)
-    except Exception as ex:
-        print(type(ex))
+    except Exception:
         return FileResponse("./html/login.html", media_type="text/html")
 
 
@@ -353,33 +349,39 @@ async def login(
         data={"sub": user.email}, expires_delta=timedelta(minutes=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
 
+    response = RedirectResponse(url="/dashboard", status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
-        value=f"Bearer {access_token}",
+        value=f"{access_token}",
         httponly=True,
         max_age=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         expires=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         samesite="lax",
     )
+    return response
 
-    return {"message": "login successful"}
+
+@app.post("/logout")
+async def logout():
+    response = RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie(key="access_token")
+    return response
 
 
 async def get_current_user(
-    token: str = Depends(oauth2_scheme),
+    token: str,
     session: AsyncSession = Depends(get_db_session),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=401,
         detail="認証情報を検証できませんでした",
-        headers={"WWW-Authenticate": "Bearer"},
+        headers={"cookie": ""},
     )
     try:
         payload = jwt.decode(token, jwt_settings.SECRET_KEY, algorithms=[jwt_settings.ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        # token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
 
@@ -391,11 +393,10 @@ async def get_current_user(
 
 
 @app.get("/dashboard")
-async def dashboard_page(
-    current_user: User = Depends(get_current_user),
-):
+async def dashboard_page(request: Request, session: AsyncSession = Depends(get_db_session)):
+    token = fetch_access_token_from_cookie_header(request)
+    await get_current_user(token, session)
     return FileResponse("./html/dashboard.html", media_type="text/html")
-    # return templates.TemplateResponse("dashboard.html", {"user": current_user})
 
 
 @app.get("/results")
