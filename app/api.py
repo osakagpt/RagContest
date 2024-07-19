@@ -1,5 +1,5 @@
 from typing import List, Dict
-from datetime import timedelta
+from datetime import datetime, timedelta
 import uuid
 from contextlib import asynccontextmanager
 
@@ -49,6 +49,7 @@ from utils import (
     fetch_access_token_from_cookie_header,
     format_millisec,
     authenticate_user,
+    send_email_to,
 )
 from validate import UserAnswerScorer
 
@@ -291,20 +292,25 @@ async def signup(
             raise HTTPException(status_code=400, detail="Email already temporarily registered")
 
     hashed_password = get_password_hash(password)
+    base_id = str(uuid.uuid4())
     new_user = TemporaryUser(
-        id=str(uuid.uuid4()),
+        id=base_id,
         name=username,
         email=email,
         password=hashed_password,
     )
     session.add(new_user)
     await session.commit()
-    return {"message": "Temporarily registered. Please check out your email registered."}
+    send_email_to(email, base_id)
+    return {"message": "Temporarily registered. Please check out your email registered in 1 hour."}
 
 
-@app.get("/authenticate/{user_id}")
+@app.get("/verify/{user_id}")
 async def authenticate_user_by_email(user_id: str, session: AsyncSession = Depends(get_db_session)):
-    result = await session.execute(select(TemporaryUser).where(TemporaryUser.id == user_id))
+    hour_ago = datetime.now() - timedelta(hours=1)
+    result = await session.execute(
+        select(TemporaryUser).where((TemporaryUser.registered_at > hour_ago) & (TemporaryUser.id == user_id))
+    )
     tmp_user = result.scalars().first()
     if not tmp_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -318,7 +324,7 @@ async def authenticate_user_by_email(user_id: str, session: AsyncSession = Depen
     session.add(new_user)
     await session.delete(tmp_user)
     await session.commit()
-    return {"api_key": new_user.api_key}
+    return {"api_key": new_api_key}
 
 
 @app.get("/login")
@@ -394,9 +400,12 @@ async def get_current_user(
 
 @app.get("/dashboard")
 async def dashboard_page(request: Request, session: AsyncSession = Depends(get_db_session)):
-    token = fetch_access_token_from_cookie_header(request)
-    await get_current_user(token, session)
-    return FileResponse("./html/dashboard.html", media_type="text/html")
+    try:
+        token = fetch_access_token_from_cookie_header(request)
+        await get_current_user(token, session)
+        return FileResponse("./html/dashboard.html", media_type="text/html")
+    except Exception:
+        return RedirectResponse(url="/login", status_code=303)
 
 
 @app.get("/results")

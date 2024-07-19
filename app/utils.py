@@ -1,5 +1,8 @@
 from datetime import timedelta, datetime, timezone
-from typing import List, Dict, Optional
+from email.message import EmailMessage
+import os
+import smtplib
+from typing import Optional
 
 from fastapi import Request, Depends, HTTPException, status
 from jose import jwt
@@ -65,3 +68,25 @@ async def authenticate_user(
     if not verify_password(password, user.password):
         return None
     return user
+
+
+def send_email_to(to_email: str, uid: str):
+    SMTP_HOST = "smtp.gmail.com"
+    SMTP_PORT = 587
+    EMAIL_USER = os.getenv("EMAIL")
+    PASSWORD = os.getenv("EMAIL_PASSWORD")
+    msg = EmailMessage()
+    msg["From"] = EMAIL_USER
+    msg["To"] = to_email
+    msg["Subject"] = "Thank you for registering RagContest"
+
+    msg.add_alternative("Hello, User.", subtype="text")
+    host_ip = os.getenv("EC2_INSTANCE_IP")
+    host_port = int(os.getenv("EC2_INSTANCE_PORT"))
+    url = f"http://{host_ip}:{host_port}/verify/{uid}"
+    msg.add_alternative(f"<a href={url}> Verify your account in 1 hour</a>", subtype="html")
+
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
+        smtp.starttls()
+        smtp.login(EMAIL_USER, PASSWORD)
+        smtp.send_message(msg)

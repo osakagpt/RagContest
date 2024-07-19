@@ -21,12 +21,14 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
-        echo "OPENAI_EMBEDDING_MODEL=${{ secrets.OPENAI_EMBEDDING_MODEL }}" >> .env
-        echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-        echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-        echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-        docker-compose -f compose.yml -f compose.build.yml build 
+        # echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+        # echo "OPENAI_EMBEDDING_MODEL=${{ secrets.OPENAI_EMBEDDING_MODEL }}" >> .env
+        # echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+        # echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+        # echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+        # echo "EMAIL=${{ secrets.EMAIL }}" >> .env
+        # echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
+        docker-compose -f compose.yml -f compose.build.yml build --no-cache
         docker-compose push
 
   deploy:
@@ -42,22 +44,17 @@ jobs:
         ssh-private-key: ${{ secrets.EC2_PRIVATE_KEY }}
 
     - name: Deploy to EC2 instance
-      # env:
-      #   EC2_INSTANCE_IP: ${{ secrets.EC2_INSTANCE_IP }}
-      #   EC2_INSTANCE_USER: ${{ secrets.EC2_INSTANCE_USER }}
-      #   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      #   OPENAI_EMBEDDING_MODEL: ${{ secrets.OPENAI_EMBEDDING_MODEL }}
-      #   POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      #   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      #   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       run: |
         scp -r -o StrictHostKeyChecking=no compose.yml ${{ secrets.EC2_INSTANCE_USER }}@${{ secrets.EC2_INSTANCE_IP }}:~/
         ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@${{ secrets.EC2_INSTANCE_IP }} '
-          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
+          echo "EC2_INSTANCE_IP"=${{ secrets.EC2_INSTANCE_IP }} > .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "OPENAI_EMBEDDING_MODEL=${{ secrets.OPENAI_EMBEDDING_MODEL }}" >> .env
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "EMAIL=${{ secrets.EMAIL }}" >> .env
+          echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
           docker-compose -f compose.yml down --rmi all
           docker-compose -f compose.yml pull
           docker-compose -f compose.yml up -d

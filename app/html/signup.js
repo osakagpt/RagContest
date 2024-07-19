@@ -13,7 +13,7 @@ document.getElementById('signupForm').addEventListener('submit', function (event
         },
         body: JSON.stringify({ username, email, password })
     })
-        .then(response => response.json())
-        .then(data => alert('Your API KEY(メモっとけ): ' + data.message))
-        .catch(error => alert('Error during signup: ' + error));
+    .then(response => response.json())
+    .then(data => alert('Your API KEY(メモっとけ): ' + data.message))
+    .catch(error => alert('Error during signup: ' + error));
 });
