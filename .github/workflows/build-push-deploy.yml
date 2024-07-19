@@ -21,15 +21,8 @@ jobs:
 
     - name: Build and push Docker images
       run: |
-        # echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" > .env
-        # echo "OPENAI_EMBEDDING_MODEL=${{ secrets.OPENAI_EMBEDDING_MODEL }}" >> .env
-        # echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
-        # echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-        # echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-        # echo "EMAIL=${{ secrets.EMAIL }}" >> .env
-        # echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
-        docker-compose -f compose.yml -f compose.build.yml build --no-cache
-        docker-compose push
+        docker-compose -f compose.build.yml build --no-cache
+        docker-compose -f compose.build.yml push
 
   deploy:
     needs: build-and-push
@@ -45,9 +38,10 @@ jobs:
 
     - name: Deploy to EC2 instance
       run: |
-        scp -r -o StrictHostKeyChecking=no compose.yml ${{ secrets.EC2_INSTANCE_USER }}@${{ secrets.EC2_INSTANCE_IP }}:~/
+        scp -r -o StrictHostKeyChecking=no compose.deploy.yml ${{ secrets.EC2_INSTANCE_USER }}@${{ secrets.EC2_INSTANCE_IP }}:~/
         ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@${{ secrets.EC2_INSTANCE_IP }} '
           echo "EC2_INSTANCE_IP"=${{ secrets.EC2_INSTANCE_IP }} > .env
+          echo "EC2_INSTANCE_IP"=${{ secrets.EC2_INSTANCE_PORT }} >> .env
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "OPENAI_EMBEDDING_MODEL=${{ secrets.OPENAI_EMBEDDING_MODEL }}" >> .env
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
@@ -55,7 +49,7 @@ jobs:
           echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
           echo "EMAIL=${{ secrets.EMAIL }}" >> .env
           echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
-          docker-compose -f compose.yml down --rmi all
-          docker-compose -f compose.yml pull
-          docker-compose -f compose.yml up -d
+          docker-compose -f compose.deploy.yml down --rmi all
+          docker-compose -f compose.deploy.yml pull
+          docker-compose -f compose.deploy.yml up -d
         '
