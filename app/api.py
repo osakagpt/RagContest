@@ -302,7 +302,7 @@ async def signup(
     session.add(new_user)
     await session.commit()
     send_email_to(email, base_id)
-    return {"message": "Temporarily registered. Please check out your email registered in 1 hour."}
+    return RedirectResponse(url="/login", status_code=303)
 
 
 @app.get("/verify/{user_id}")

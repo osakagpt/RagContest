@@ -11,9 +11,19 @@ document.getElementById('signupForm').addEventListener('submit', function (event
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username, email, password })
+        body: JSON.stringify({ username, email, password }),
+        redirect: 'manual'
     })
-    .then(response => response.json())
-    .then(data => alert('Your API KEY(メモっとけ): ' + data.message))
+    .then(response => {
+        if (response.type === 'opaqueredirect') {
+            // This means we received a redirect response
+            window.location.href = '/login'; // Manually redirect to dashboard
+        } else if (!response.ok) {
+            throw new Error('Signup Failed');
+        } else {
+            // Handle successful non-redirect response here if needed
+            alert('Temporarily Registered. Please check your email for veryfing your account in 1 hour');
+        }
+    })
     .catch(error => alert('Error during signup: ' + error));
 });

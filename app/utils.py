@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import jwt_settings
 from database import get_db_session
+from logger_config import logger
 from model import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -71,22 +72,25 @@ async def authenticate_user(
 
 
 def send_email_to(to_email: str, uid: str):
-    SMTP_HOST = "smtp.gmail.com"
-    SMTP_PORT = 587
-    EMAIL_USER = os.getenv("EMAIL")
-    PASSWORD = os.getenv("EMAIL_PASSWORD")
-    msg = EmailMessage()
-    msg["From"] = EMAIL_USER
-    msg["To"] = to_email
-    msg["Subject"] = "Thank you for registering RagContest"
+    try:
+        SMTP_HOST = "smtp.gmail.com"
+        SMTP_PORT = 587
+        EMAIL_USER = os.getenv("EMAIL")
+        PASSWORD = os.getenv("EMAIL_PASSWORD")
+        msg = EmailMessage()
+        msg["From"] = EMAIL_USER
+        msg["To"] = to_email
+        msg["Subject"] = "Thank you for registering RagContest"
 
-    msg.add_alternative("Hello, User.", subtype="text")
-    host_ip = os.getenv("EC2_INSTANCE_IP")
-    host_port = int(os.getenv("EC2_INSTANCE_PORT"))
-    url = f"http://{host_ip}:{host_port}/verify/{uid}"
-    msg.add_alternative(f"<a href={url}> Verify your account in 1 hour</a>", subtype="html")
+        msg.add_alternative("Hello, User.", subtype="text")
+        host_ip = os.getenv("EC2_INSTANCE_IP")
+        host_port = int(os.getenv("EC2_INSTANCE_PORT"))
+        url = f"http://{host_ip}:{host_port}/verify/{uid}"
+        msg.add_alternative(f"<a href={url}> Verify your account in 1 hour</a>", subtype="html")
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
-        smtp.starttls()
-        smtp.login(EMAIL_USER, PASSWORD)
-        smtp.send_message(msg)
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
+            smtp.starttls()
+            smtp.login(EMAIL_USER, PASSWORD)
+            smtp.send_message(msg)
+    except Exception as e:
+        logger.error(f"Error sending email: {e}")

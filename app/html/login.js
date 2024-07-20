@@ -21,7 +21,7 @@ document.getElementById('loginForm').addEventListener('submit', function (event)
             throw new Error('Login Failed');
         } else {
             // Handle successful non-redirect response here if needed
-            console.log('Login successful');
+            alert('Login successful');
         }
     })
     .catch(error => alert('Error during login: ' + error));

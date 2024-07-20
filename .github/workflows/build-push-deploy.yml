@@ -41,7 +41,7 @@ jobs:
         scp -r -o StrictHostKeyChecking=no compose.deploy.yml ${{ secrets.EC2_INSTANCE_USER }}@${{ secrets.EC2_INSTANCE_IP }}:~/
         ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_INSTANCE_USER }}@${{ secrets.EC2_INSTANCE_IP }} '
           echo "EC2_INSTANCE_IP"=${{ secrets.EC2_INSTANCE_IP }} > .env
-          echo "EC2_INSTANCE_IP"=${{ secrets.EC2_INSTANCE_PORT }} >> .env
+          echo "EC2_INSTANCE_PORT"=${{ secrets.EC2_INSTANCE_PORT }} >> .env
           echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
           echo "OPENAI_EMBEDDING_MODEL=${{ secrets.OPENAI_EMBEDDING_MODEL }}" >> .env
           echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
